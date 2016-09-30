@@ -64,6 +64,8 @@ void BaseEngine::setClipboardString(const char * text)
 
 GLuint BaseEngine::loadTextureImage2D(unsigned char * pixels, int width, int height)
 {
+    
+    
     GLint last_texture;
     glGetIntegerv(GL_TEXTURE_BINDING_2D, &last_texture);
     
@@ -87,3 +89,5 @@ GLuint BaseEngine::loadTextureImage2D(unsigned char * pixels, int width, int hei
     
     return new_texture;
 };
+
+

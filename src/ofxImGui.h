@@ -12,6 +12,7 @@
 #endif
 
 
+
 class ofxImGui
 {
 public:
@@ -26,18 +27,27 @@ public:
     void openThemeColorWindow();
     GLuint loadImage(ofImage& image);
     GLuint loadImage(string imagePath);
+    GLuint loadImage(ofImage& image, GLuint texID);
     
     GLuint loadPixels(string imagePath);
     GLuint loadPixels(ofPixels& pixels);
+    GLuint loadPixels(ofPixels& pixels, GLuint TexID);
     
     GLuint loadTexture(string imagePath);
     GLuint loadTexture(ofTexture& texture, string imagePath);
+    
+    GLuint loadFbo(ofFbo &buffer);
     
     BaseTheme* theme;
     void setTheme(BaseTheme* theme);
 
     float lastTime;
     vector<ofTexture*> loadedTextures;
+    
+    GLuint lastID;
+    ofPixels pixels;
+    
+    ofBufferObject pixelBufferBack, pixelBufferFront;
     
 #if defined(TARGET_OPENGLES)
     EngineOpenGLES* engine;

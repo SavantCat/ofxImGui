@@ -11,20 +11,20 @@ BaseTheme::BaseTheme()
     col_main_area = ofColor::gray;
     col_win_popup = ofColor::yellow;
     col_win_backg = ofColor::black;
-
+    
     col_main_text = ofColor::fromHex(0xdbede2);
     col_main_head = ofColor::fromHex(0xd12d49);
     col_main_area = ofColor::fromHex(0x333844);
     col_win_popup = ofColor::fromHex(0x77c4d3);
     col_win_backg = ofColor::fromHex(0x21232b);
-
+    
 }
 
 
 void BaseTheme::setup()
 {
     ImGuiStyle* style = &ImGui::GetStyle();
-
+    
     style->WindowMinSize            = ImVec2(160, 65);
     style->FramePadding             = ImVec2(4, 2);
     style->ItemSpacing              = ImVec2(6, 2);
@@ -49,7 +49,7 @@ void BaseTheme::updateColors()
     
     style->Colors[ImGuiCol_Text]                  = ImVec4(col_main_text, 1.00f);
     style->Colors[ImGuiCol_TextDisabled]          = ImVec4(col_main_text, 0.58f);
-    style->Colors[ImGuiCol_WindowBg]              = ImVec4(col_win_backg, 0.70f);
+    style->Colors[ImGuiCol_WindowBg]              = ImVec4(col_win_backg, 1.00f);
     style->Colors[ImGuiCol_ChildWindowBg]         = ImVec4(col_main_area, 0.58f);
     style->Colors[ImGuiCol_Border]                = ImVec4(col_win_backg, 0.00f);
     style->Colors[ImGuiCol_BorderShadow]          = ImVec4(col_win_backg, 0.00f);
@@ -88,7 +88,6 @@ void BaseTheme::updateColors()
     style->Colors[ImGuiCol_PlotHistogram]         = ImVec4(col_main_text, 0.63f);
     style->Colors[ImGuiCol_PlotHistogramHovered]  = ImVec4(col_main_head, 1.00f);
     style->Colors[ImGuiCol_TextSelectedBg]        = ImVec4(col_main_head, 0.43f);
-    style->Colors[ImGuiCol_PopupBg]               = ImVec4(col_win_backg, 0.92f);
     style->Colors[ImGuiCol_ModalWindowDarkening]  = ImVec4(col_main_area, 0.73f);
 }
 
@@ -127,10 +126,10 @@ void BaseTheme::themeColorsWindow(bool isOpen)
         
         if(b1 || b2 || b3 || b4 || b5)
         {
-           updateColors();
+            updateColors();
         }
         
-
+        
         ImGui::End();
     }
 }
