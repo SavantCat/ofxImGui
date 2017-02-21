@@ -38,6 +38,6 @@ namespace ofxImGui
 		void loadTexture(string imagePath, GLuint &TexID);
 		void loadTexture(ofTexture& texture, string imagePath, GLuint &TexID);
 		
-		void loadFbo(ofFbo fbo, GLuint &TexID);
+		void loadFbo(ofFbo &fbo, GLuint &TexID);
 	};
 }

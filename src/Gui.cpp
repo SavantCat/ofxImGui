@@ -124,14 +124,14 @@ namespace ofxImGui
 	}
 
 	//--------------------------------------------------------------
-	void Gui::loadFbo(ofFbo fbo, GLuint &TexID) {
+	void Gui::loadFbo(ofFbo &fbo, GLuint &TexID) {
 		if (fbo.getTexture().getTextureData().glInternalFormat != GL_TEXTURE_2D) {
 			//Reallocate
+			ofLogVerbose() << "Reallocate";
 			ofFbo::Settings settings;
 			settings.width = fbo.getWidth();
 			settings.height = fbo.getHeight();
 			settings.internalformat = fbo.getTexture().getTextureData().glInternalFormat;
-			settings.numSamples = 16;
 			settings.textureTarget = GL_TEXTURE_2D;
 			fbo.allocate(settings);
 		}
