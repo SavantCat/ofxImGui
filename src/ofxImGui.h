@@ -339,7 +339,8 @@ namespace ImGui
 		return value_changed | widget_used;
 	}
 
-#ifdef __OPENCV_OLD_CV_H__
+#if defined(__OPENCV_OLOPENCV_OLD_CV_HD_CV_H__) || defined(OPENCV_OLD_CV_H)
+
 	static void ConvertMatToGL(const cv::Mat& src, GLuint* texID) {
 		if (src.empty() == true)
 			return;
@@ -388,7 +389,7 @@ namespace ImGui
 			);
 		}
 		else {
-			ofLog() << "other channel !";
+			ofLogError() << "other channel !";
 		}
         
         
