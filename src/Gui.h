@@ -3,7 +3,6 @@
 #include "ofImage.h"
 #include "ofPixels.h"
 #include "ofTexture.h"
-#include "ofFbo.h"
 
 #include "BaseEngine.h"
 #include "BaseTheme.h"
@@ -29,15 +28,15 @@ namespace ofxImGui
 
 		BaseTheme* theme;
 
-		void loadImage(ofImage& image, GLuint &TexID);
-		void loadImage(string imagePath, GLuint &TexID);
+		GLuint loadImage(ofImage& image);
+		GLuint loadImage(string imagePath);
 
-		void loadPixels(string imagePath, GLuint &TexID);
-		void loadPixels(ofPixels& pixels, GLuint &TexID);
+		GLuint loadPixels(string imagePath);
+		GLuint loadPixels(ofPixels& pixels);
 
-		void loadTexture(string imagePath, GLuint &TexID);
-		void loadTexture(ofTexture& texture, string imagePath, GLuint &TexID);
-		
-		void loadFbo(ofFbo &fbo, GLuint &TexID);
+		GLuint loadTexture(string imagePath);
+		GLuint loadTexture(ofTexture& texture, string imagePath);
+
+		vector<ofTexture*> loadedTextures;
 	};
 }

@@ -5,14 +5,14 @@
 #include "ofTexture.h"
 #include "imgui.h"
 
-static const int kGuiMargin = 10;
+static const int kImGuiMargin = 10;
 
 namespace ofxImGui
 {
 	struct WindowOpen
 	{
 		std::stack<std::vector<std::string>> usedNames;
-		shared_ptr<ofParameter<bool>> parameter;
+		std::shared_ptr<ofParameter<bool>> parameter;
 		bool value;
 	};
 
@@ -38,6 +38,7 @@ namespace ofxImGui
 	void SetNextWindow(Settings& settings);
 	bool BeginWindow(ofParameter<bool>& parameter, Settings& settings, bool collapse = true);
 	bool BeginWindow(const string& name, Settings& settings, bool collapse = true, bool * open = nullptr);
+	bool BeginWindow(const string& name, Settings& settings, ImGuiWindowFlags flags, bool * open = nullptr);
 	void EndWindow(Settings& settings);
 
 	bool BeginTree(ofAbstractParameter& parameter, Settings& settings);
@@ -68,7 +69,13 @@ namespace ofxImGui
 	bool AddRadio(ofParameter<int>& parameter, vector<string> labels, int columns = 1);
 	bool AddStepper(ofParameter<int>& parameter, int step = 1, int stepFast = 100);
 
+	bool AddRange(const string& name, ofParameter<int>& parameterMin, ofParameter<int>& parameterMax, int speed = 1);
 	bool AddRange(const string& name, ofParameter<float>& parameterMin, ofParameter<float>& parameterMax, float speed = 0.01f);
+#if OF_VERSION_MINOR >= 10
+	bool AddRange(const string& name, ofParameter<glm::vec2>& parameterMin, ofParameter<glm::vec2>& parameterMax, float speed = 0.01f);
+	bool AddRange(const string& name, ofParameter<glm::vec3>& parameterMin, ofParameter<glm::vec3>& parameterMax, float speed = 0.01f);
+	bool AddRange(const string& name, ofParameter<glm::vec4>& parameterMin, ofParameter<glm::vec4>& parameterMax, float speed = 0.01f);
+#endif
 
 #if OF_VERSION_MINOR >= 10
 	bool AddValues(const string& name, vector<glm::ivec2>& values, int minValue, int maxValue);
@@ -89,9 +96,14 @@ namespace ofxImGui
 
 	void AddImage(ofBaseHasTexture& hasTexture, const ofVec2f& size);
 	void AddImage(ofTexture& texture, const ofVec2f& size);
-}
+
+
+} // end namespace ofxImgui
+
+
 
 //--------------------------------------------------------------
+
 template<typename ParameterType>
 bool ofxImGui::AddParameter(ofParameter<ParameterType>& parameter)
 {

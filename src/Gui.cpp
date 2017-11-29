@@ -4,6 +4,8 @@
 
 #if defined(TARGET_OPENGLES)
 #include "EngineOpenGLES.h"
+#elif defined (OF_TARGET_API_VULKAN)
+#include "EngineVk.h"
 #else
 #include "EngineGLFW.h"
 #endif
@@ -27,8 +29,10 @@ namespace ofxImGui
 
 #if defined(TARGET_OPENGLES)
 		engine = new EngineOpenGLES();
-#else  
-		engine = new EngineGLFW();
+#elif defined (OF_TARGET_API_VULKAN) 
+		engine = new EngineVk();
+#else 
+	engine = new EngineGLFW();
 #endif
 
 		engine->setup();
@@ -53,6 +57,7 @@ namespace ofxImGui
 		}
 		theme = theme_;
 		theme->updateColors();
+		theme->setup();
 	}
 
 	//--------------------------------------------------------------
@@ -62,53 +67,46 @@ namespace ofxImGui
 	}
 
 	//--------------------------------------------------------------
-	void Gui::loadPixels(ofPixels& pixels, GLuint &TexID)
+	GLuint Gui::loadPixels(ofPixels& pixels)
 	{
-		glDeleteTextures(1, &TexID);
-
-		pixels.setImageType(OF_IMAGE_COLOR);
-
-		TexID = engine->loadTextureImage2D(pixels.getData(), pixels.getPixelFormat(), pixels.getWidth(), pixels.getHeight());
+		return engine->loadTextureImage2D(pixels.getData(), pixels.getWidth(), pixels.getHeight());
 	}
 
 	//--------------------------------------------------------------
-	void Gui::loadPixels(string imagePath, GLuint &TexID)
+	GLuint Gui::loadPixels(string imagePath)
 	{
-		if (!engine) return;
+		if (!engine) return -1;
 		ofPixels pixels;
 		ofLoadImage(pixels, imagePath);
-		loadPixels(pixels, TexID);
+		return loadPixels(pixels);
 	}
 
 	//--------------------------------------------------------------
-	void Gui::loadImage(ofImage& image, GLuint &TexID)
+	GLuint Gui::loadImage(ofImage& image)
 	{
-		if (!engine) return;
-		loadPixels(image.getPixels(), TexID);
+		if (!engine) return -1;
+		return loadPixels(image.getPixels());
 	}
 
 	//--------------------------------------------------------------
-	void Gui::loadImage(string imagePath, GLuint &TexID)
+	GLuint Gui::loadImage(string imagePath)
 	{
-		loadPixels(imagePath, TexID);
+		return loadPixels(imagePath);
 	}
 
 	//--------------------------------------------------------------
-	void Gui::loadTexture(string imagePath, GLuint &TexID)
+	GLuint Gui::loadTexture(string imagePath)
 	{
 		ofDisableArbTex();
 		ofTexture* texture = new ofTexture();
 		ofLoadImage(*texture, imagePath);
 		ofEnableArbTex();
-
-		ofPixels pixels;
-		texture->readToPixels(pixels);
-
-		loadPixels(pixels, TexID);
+		loadedTextures.push_back(texture);
+		return texture->getTextureData().textureID;
 	}
 
 	//--------------------------------------------------------------
-	void Gui::loadTexture(ofTexture& texture, string imagePath, GLuint &TexID)
+	GLuint Gui::loadTexture(ofTexture& texture, string imagePath)
 	{
 		bool isUsingArb = ofGetUsingArbTex();
 		if (isUsingArb)
@@ -120,22 +118,7 @@ namespace ofxImGui
 		{
 			ofEnableArbTex();
 		}
-		TexID = texture.getTextureData().textureID;
-	}
-
-	//--------------------------------------------------------------
-	void Gui::loadFbo(ofFbo &fbo, GLuint &TexID) {
-		if (fbo.getTexture().getTextureData().glInternalFormat != GL_TEXTURE_2D) {
-			//Reallocate
-			ofLogVerbose() << "Reallocate";
-			ofFbo::Settings settings;
-			settings.width = fbo.getWidth();
-			settings.height = fbo.getHeight();
-			settings.internalformat = fbo.getTexture().getTextureData().glInternalFormat;
-			settings.textureTarget = GL_TEXTURE_2D;
-			fbo.allocate(settings);
-		}
-		TexID = fbo.getTexture().getTextureData().textureID;
+		return texture.getTextureData().textureID;
 	}
 
 	//--------------------------------------------------------------
@@ -195,6 +178,11 @@ namespace ofxImGui
 			delete theme;
 			theme = nullptr;
 		}
+		for (size_t i = 0; i < loadedTextures.size(); i++)
+		{
+			delete loadedTextures[i];
+		}
+		loadedTextures.clear();
 	}
 
 	//--------------------------------------------------------------

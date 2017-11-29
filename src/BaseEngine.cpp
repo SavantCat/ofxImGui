@@ -9,10 +9,11 @@ namespace ofxImGui
 	int BaseEngine::g_VertHandle = 0;
 	int BaseEngine::g_FragHandle = 0;
 
-	int BaseEngine::g_AttribLocationTex = 0;
-	int BaseEngine::g_AttribLocationProjMtx = 0;
-	int BaseEngine::g_AttribLocationPosition = 0;
+	int BaseEngine::g_UniformLocationTex = 0;
+	int BaseEngine::g_UniformLocationProjMtx = 0;
 	int BaseEngine::g_AttribLocationUV = 0;
+
+	int BaseEngine::g_AttribLocationPosition = 0;
 	int BaseEngine::g_AttribLocationColor = 0;
 
 	unsigned int BaseEngine::g_VboHandle = 0;
@@ -96,71 +97,6 @@ namespace ofxImGui
 			GL_UNSIGNED_BYTE,
 			pixels
 		);
-
-		glBindTexture(GL_TEXTURE_2D, last_texture);
-
-		return new_texture;
-	};
-
-	//--------------------------------------------------------------
-	GLuint BaseEngine::loadTextureImage2D(unsigned char * pixels, ofPixelFormat pixelFormat, int width, int height)
-	{
-		GLint last_texture;
-		glGetIntegerv(GL_TEXTURE_BINDING_2D, &last_texture);
-
-		GLuint new_texture;
-		glGenTextures(1, &new_texture);
-		glBindTexture(GL_TEXTURE_2D, new_texture);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-
-		switch (pixelFormat)
-		{
-		case OF_PIXELS_BGRA:
-		case OF_PIXELS_RGBA:
-			glTexImage2D(
-				GL_TEXTURE_2D,
-				0,
-				GL_RGBA,
-				width, height,
-				0,
-				GL_RGBA,
-				GL_UNSIGNED_BYTE,
-				pixels
-			);
-			break;
-		case OF_PIXELS_BGR:
-		case OF_PIXELS_RGB:
-		case OF_PIXELS_RGB565:
-			glTexImage2D(
-				GL_TEXTURE_2D,
-				0,
-				GL_RGB,
-				width, height,
-				0,
-				GL_RGB,
-				GL_UNSIGNED_BYTE,
-				pixels
-			);
-			break;
-		case OF_PIXELS_GRAY:
-			glTexImage2D(
-				GL_TEXTURE_2D,
-				0,
-				GL_LUMINANCE,
-				width, height,
-				0,
-				GL_LUMINANCE,
-				GL_UNSIGNED_BYTE,
-				pixels
-			);
-			break;
-		default:
-			ofLog(OF_LOG_ERROR, "ofPixels: image type not supported");
-			return -1;
-			break;
-		}
 
 		glBindTexture(GL_TEXTURE_2D, last_texture);
 
