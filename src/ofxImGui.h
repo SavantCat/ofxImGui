@@ -1,9 +1,10 @@
-#pragma once
+ï»¿#pragma once
+
 
 #include "imgui.h"
-#include "Gui.h"
 #include "imHelpers.h"
- 
+#include "Gui.h"
+
 #define IM_ARRAYSIZE(_ARR)  ((int)(sizeof(_ARR)/sizeof(*_ARR)))
 
 namespace ImGui
@@ -26,12 +27,12 @@ namespace ImGui
 
 		void    Clear() { Buf.clear(); LineOffsets.clear(); }
 
-		void    AddLog(const char* fmt, ...) IM_PRINTFARGS(2)
+		void    AddLog(const char* fmt, ...)
 		{
 			int old_size = Buf.size();
 			va_list args;
 			va_start(args, fmt);
-			Buf.appendv(fmt, args);
+			Buf.appendf(fmt, args);
 			va_end(args);
 			for (int new_size = Buf.size(); old_size < new_size; old_size++)
 				if (Buf[old_size] == '\n')
@@ -39,6 +40,38 @@ namespace ImGui
 			ScrollToBottom = true;
 		}
 
+		void    simpleDraw(const char* title) {
+			if (ImGui::Button("Clear")) Clear();
+			ImGui::SameLine();
+			bool copy = ImGui::Button("Copy");
+			ImGui::SameLine();
+			Filter.Draw("Filter", -100.0f);
+			ImGui::Separator();
+			ImGui::BeginChild("scrolling", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
+			if (copy) ImGui::LogToClipboard();
+
+			if (Filter.IsActive())
+			{
+				const char* buf_begin = Buf.begin();
+				const char* line = buf_begin;
+				for (int line_no = 0; line != NULL; line_no++)
+				{
+					const char* line_end = (line_no < LineOffsets.Size) ? buf_begin + LineOffsets[line_no] : NULL;
+					if (Filter.PassFilter(line, line_end))
+						ImGui::TextUnformatted(line, line_end);
+					line = line_end && line_end[1] ? line_end + 1 : NULL;
+				}
+			}
+			else
+			{
+				ImGui::TextUnformatted(Buf.begin());
+			}
+
+			if (ScrollToBottom)
+				ImGui::SetScrollHere(1.0f);
+			ScrollToBottom = false;
+			ImGui::EndChild();
+		}
 		void    Draw(const char* title, bool* p_open = NULL)
 		{
 			ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiSetCond_FirstUseEver);
@@ -77,7 +110,7 @@ namespace ImGui
 		}
 		void    Draw(const char* title, ImVec2 pos, ImVec2 size, bool* p_open = NULL)
 		{
-			//ƒEƒBƒ“ƒhƒE‚ÌƒIƒvƒVƒ‡ƒ“
+			//ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½ÌƒIï¿½vï¿½Vï¿½ï¿½ï¿½ï¿½
 			static bool no_titlebar = true;
 			static bool no_border = false;
 			static bool no_resize = true;
@@ -89,7 +122,7 @@ namespace ImGui
 			static ImGuiWindowFlags window_flags = 0;
 
 			if (no_titlebar)  window_flags |= ImGuiWindowFlags_NoTitleBar;
-			if (!no_border)   window_flags |= ImGuiWindowFlags_ShowBorders;
+			//if (!no_border)   window_flags |= ImGuiWindowFlags_ShowBorders;
 			if (no_resize)    window_flags |= ImGuiWindowFlags_NoResize;
 			if (no_move)      window_flags |= ImGuiWindowFlags_NoMove;
 			if (no_scrollbar) window_flags |= ImGuiWindowFlags_NoScrollbar;
@@ -133,11 +166,6 @@ namespace ImGui
 			ImGui::End();
 		}
 	};
-
-	inline void setImGUIColor(int id, ImVec4 color) {
-		ImGuiStyle& style = ImGui::GetStyle();
-		style.Colors[id] = ImVec4(color.x / 255.f, color.y / 255.f, color.z / 255.f, color.w / 255.f);
-	}
 
 	static bool ColorPicker(float *col, bool alphabar)
 	{
@@ -252,10 +280,10 @@ namespace ImGui
 			ImVec2 mouse_pos_in_canvas = ImVec2(
 				ImGui::GetIO().MousePos.x - picker_pos.x, ImGui::GetIO().MousePos.y - picker_pos.y);
 
-			/**/ if (mouse_pos_in_canvas.x <                     0) mouse_pos_in_canvas.x = 0;
+			/**/ if (mouse_pos_in_canvas.x < 0) mouse_pos_in_canvas.x = 0;
 			else if (mouse_pos_in_canvas.x >= SV_PICKER_SIZE.x - 1) mouse_pos_in_canvas.x = SV_PICKER_SIZE.x - 1;
 
-			/**/ if (mouse_pos_in_canvas.y <                     0) mouse_pos_in_canvas.y = 0;
+			/**/ if (mouse_pos_in_canvas.y < 0) mouse_pos_in_canvas.y = 0;
 			else if (mouse_pos_in_canvas.y >= SV_PICKER_SIZE.y - 1) mouse_pos_in_canvas.y = SV_PICKER_SIZE.y - 1;
 
 			value = 1 - (mouse_pos_in_canvas.y / (SV_PICKER_SIZE.y - 1));
@@ -273,7 +301,7 @@ namespace ImGui
 			ImVec2 mouse_pos_in_canvas = ImVec2(
 				ImGui::GetIO().MousePos.x - picker_pos.x, ImGui::GetIO().MousePos.y - picker_pos.y);
 
-			/**/ if (mouse_pos_in_canvas.y <                     0) mouse_pos_in_canvas.y = 0;
+			/**/ if (mouse_pos_in_canvas.y < 0) mouse_pos_in_canvas.y = 0;
 			else if (mouse_pos_in_canvas.y >= SV_PICKER_SIZE.y - 1) mouse_pos_in_canvas.y = SV_PICKER_SIZE.y - 1;
 
 			hue = mouse_pos_in_canvas.y / (SV_PICKER_SIZE.y - 1);
@@ -292,7 +320,7 @@ namespace ImGui
 				ImVec2 mouse_pos_in_canvas = ImVec2(
 					ImGui::GetIO().MousePos.x - picker_pos.x, ImGui::GetIO().MousePos.y - picker_pos.y);
 
-				/**/ if (mouse_pos_in_canvas.y <                     0) mouse_pos_in_canvas.y = 0;
+				/**/ if (mouse_pos_in_canvas.y < 0) mouse_pos_in_canvas.y = 0;
 				else if (mouse_pos_in_canvas.y >= SV_PICKER_SIZE.y - 1) mouse_pos_in_canvas.y = SV_PICKER_SIZE.y - 1;
 
 				float alpha = mouse_pos_in_canvas.y / (SV_PICKER_SIZE.y - 1);
@@ -351,7 +379,7 @@ namespace ImGui
 		glBindTexture(GL_TEXTURE_2D, *texID);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        
+
 		if (src.channels() == 4) {
 			glTexImage2D(
 				GL_TEXTURE_2D,
@@ -391,8 +419,8 @@ namespace ImGui
 		else {
 			ofLogError() << "other channel !";
 		}
-        
-        
-}
+
+
+	}
 #endif
 }

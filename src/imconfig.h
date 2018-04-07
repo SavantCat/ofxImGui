@@ -46,6 +46,7 @@ operator glm::vec2() const { return glm::vec2(x, y); }
 #else
 #define IM_VEC2_CLASS_EXTRA							\
 ImVec2(const ofVec2f& f) { x = f.x; y = f.y; }		\
+ImVec2(ofVec2f& f) { x = f.x; y = f.y; }			\
 operator ofVec2f() const { return ofVec2f(x, y); }
 #endif
 

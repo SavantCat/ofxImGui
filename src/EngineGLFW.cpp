@@ -10,6 +10,16 @@ namespace ofxImGui
 	GLuint EngineGLFW::g_FontTexture = 0;
 	unsigned int EngineGLFW::g_VaoHandle = 0;
 
+	static void ImGui_ImplGlfwGL3_SetClipboardText(void* user_data, const char* text)
+	{
+		glfwSetClipboardString((GLFWwindow*)user_data, text);
+	}
+
+	static const char* ImGui_ImplGlfwGL3_GetClipboardText(void* user_data)
+	{
+		return glfwGetClipboardString((GLFWwindow*)user_data);
+	}
+
 	//--------------------------------------------------------------
 	void EngineGLFW::setup()
 	{
@@ -46,8 +56,8 @@ namespace ofxImGui
 			io.RenderDrawListsFn = fixedRenderDrawLists;
 		}
 
-		io.SetClipboardTextFn = &BaseEngine::setClipboardString;
-		io.GetClipboardTextFn = &BaseEngine::getClipboardString;
+		io.SetClipboardTextFn = ImGui_ImplGlfwGL3_SetClipboardText; 
+		io.GetClipboardTextFn = ImGui_ImplGlfwGL3_GetClipboardText;
 
 		createDeviceObjects();
 
